@@ -29,12 +29,14 @@ class Level():
 		self.tiles = tiles
 		self.playerRef = None
 		self.current_level = 0
+		self.coins = 0
 
 	def loadLevel(self, level):
 		with open(os.path.join('Levels', f'level{level}_data.p'), 'rb') as file:
 			data = pickle.load(file)
 			self.tiles.clear()
 			self.entities.clear()
+			self.coins = 0
 			for row in data:
 				for tile in row:
 					if tile[2] == Tile.T_BG:
@@ -54,7 +56,7 @@ class Level():
 						self.playerRef = Player(tile[0], tile[1], pygame.image.load(os.path.join('Images', 'player.png')).convert_alpha())
 						self.entities.append(self.playerRef)
 					if tile[2] == Tile.T_Coin:
-						#tiles.append(engine.Tile(tile[0], tile[1], tile[2]))
+						self.coins += 1
 						self.entities.append(Coin(tile[0], tile[1], pygame.image.load(os.path.join('Images', 'coin.png')).convert_alpha()))
 					if tile[2] == Tile.T_Key:
 						self.entities.append(Key(tile[0], tile[1]))
@@ -179,6 +181,7 @@ class Character(Entity):
 		self.canWallJump = False
 
 		self.speed = 5
+
 
 		self.health = 1
 

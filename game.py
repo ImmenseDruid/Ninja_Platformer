@@ -2,7 +2,7 @@ import pygame
 import pickle
 import engine
 import ui, os, music
-
+from os import path
 from pygame.locals import *
 
 
@@ -17,11 +17,26 @@ pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(music_volume)
 
 times = []
+coins = []
+max_coins = []
+
 
 for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'Levels')):
 		for file in files:
 			times.append(0)
-		
+			coins.append(0)
+			max_coins.append(0)
+
+
+if not os.path.isfile('high_scores.pickle'):
+	with open('high_scores.pickle', 'wb') as file:	
+		pickle.dump([times, coins, max_coins], file)
+
+if not os.path.isfile('settings.pickle'):
+	with open('settings.pickle', 'wb') as file:
+				pickle.dump([sfx_volume, music_volume], file)
+#with open('high_scores.json', 'w') as file:	
+#	json.dump([times, coins, max_coins], file)
 
 def main(start_level):
 	
@@ -52,7 +67,7 @@ def main(start_level):
 	timer = 0
 	level.load(level.current_level)
 
-
+	
 	run = True
 	while run:
 		delta = clock.tick(60)
@@ -100,14 +115,20 @@ def main(start_level):
 
 			if entity.update():
 				#This is such a BAD way of doing this
-				global times
-				times[level.current_level] = timer
-				
+				global times, max_coins, coins
+				if timer < times[level.current_level] or times[level.current_level] == 0:
+					times[level.current_level] = timer
+				max_coins[level.current_level] = level.coins
+				coins[level.current_level] = level.playerRef.coins
+				level.playerRef.coins = 0
 				timer = 0
 				level.current_level += 1
-				with open('high_scores.pickle', 'wb') as file:
-					print(times)		
-					pickle.dump(times, file)
+				with open('high_scores.pickle', 'wb') as file:	
+					pickle.dump([times, coins, max_coins], file)
+
+
+				
+
 
 				level.load(level.current_level)
 			entity.render(screen)
@@ -279,11 +300,15 @@ def level_select():
 			x = ((level) % (xMax)) * spacing
 			y = (level // xMax) * spacing
 			buttons.append(ui.Button(x,  y, (50, 50), img = font.render(f'{level + 1}', False, (255, 255, 255))))
-			labels.append(ui.Label(x, y, f'{times[level] / 1000}'))
+			labels.append(ui.Label(x - 50, y, f'{times[level] / 1000}'))
+			labels.append(ui.Label(x - 50, y + 10, f'{coins[level]} / {max_coins[level]}'))
 			level += 1
 
 	#level = 0
 	#print(len(buttons))
+	for i, c in enumerate(coins):
+			print(f'{c} / {max_coins[i]}')
+
 
 	while run:
 		screen.blit(start_menu_BG, (0, 0))
@@ -310,6 +335,7 @@ def level_select():
 		for label in labels:
 			label.draw(panel)
 
+		
 		if start_menu_button.draw(panel):
 			run = False
 
@@ -333,12 +359,18 @@ def start_menu():
 	with open('high_scores.pickle', 'rb') as file:
 		high_scores = pickle.load(file)
 
+	#with open('high_scores.json', 'r') as file:
+	#	high_scores = json.load(file)
+
 	sfx_volume = settings_options[0]
 	music_volume = settings_options[1]
-	global times
-	times = high_scores
+	global times, coins, max_coins
+	times = high_scores[0]
+	coins = high_scores[1]
+	max_coins = high_scores[2]
 
-	print(times)
+
+	
 
 	screen = pygame.display.set_mode((500, 500))
 	start_menu_BG = pygame.transform.scale2x(pygame.image.load(os.path.join('Images', 'MainScreenBackground.png'))).convert_alpha()
@@ -388,9 +420,7 @@ def start_menu():
 		pygame.display.update()
 
 	with open('high_scores.pickle', 'wb') as file:
-
-		print(times)
-		pickle.dump(times, file)
+		pickle.dump([times, coins, max_coins], file)
 	pygame.quit()
 	quit()
 
