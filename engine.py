@@ -21,8 +21,6 @@ def raycast2D(start, angle, maxDist):
 
 
 
-
-
 class Level():
 	def __init__(self, entities = [], tiles = []):
 		self.entities = entities
@@ -179,6 +177,7 @@ class Character(Entity):
 		self.jump = False
 		self.numJumps = 2
 		self.canWallJump = False
+		self.prev_jump = False
 
 		self.speed = 5
 
@@ -262,6 +261,10 @@ class Character(Entity):
 					self.moveRight()
 				if self.jump:
 					self.Jump()
+
+				if self.prev_jump and not self.jump and self.v[1] < 0:
+					self.v[1] = 0
+				self.prev_jump = self.jump
 		
 		super().update()
 

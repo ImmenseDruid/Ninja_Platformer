@@ -97,6 +97,9 @@ def main(start_level):
 					level.playerRef.movingLeft = False
 				if event.key == K_d:
 					level.playerRef.movingRight = False
+				if event.key == K_w:
+					if level.playerRef.v[1] < 0:
+						level.playerRef.v[1] *= .5
 
 		if level.playerRef.alive:
 			pass
