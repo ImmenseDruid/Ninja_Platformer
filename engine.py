@@ -51,7 +51,7 @@ class Level():
 						self.entities.append(NextLevelFlag(tile[0], tile[1], pygame.image.load(os.path.join('Images', 'flag.png')).convert_alpha()))
 					if tile[2] == Tile.T_PlayerSpawn:
 						#tiles.append(engine.Tile(tile[0], tile[1], tile[2]))
-						self.playerRef = Player(tile[0], tile[1], pygame.image.load(os.path.join('Images', 'player.png')).convert_alpha())
+						self.playerRef = Player(tile[0], tile[1], pygame.image.load(os.path.join('Images', 'Player.png')).convert_alpha())
 						self.entities.append(self.playerRef)
 					if tile[2] == Tile.T_Coin:
 						self.coins += 1
