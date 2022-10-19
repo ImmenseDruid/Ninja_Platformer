@@ -22,11 +22,10 @@ max_coins = []
 
 
 for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'Levels')):
-		for file in files:
-			times.append(0)
-			coins.append(0)
-			max_coins.append(0)
-
+	for file in files:
+		times.append(0)
+		coins.append(0)
+		max_coins.append(0)
 
 if not os.path.isfile('high_scores.pickle'):
 	with open('high_scores.pickle', 'wb') as file:	
@@ -34,7 +33,8 @@ if not os.path.isfile('high_scores.pickle'):
 
 if not os.path.isfile('settings.pickle'):
 	with open('settings.pickle', 'wb') as file:
-				pickle.dump([sfx_volume, music_volume], file)
+		pickle.dump([sfx_volume, music_volume], file)
+
 #with open('high_scores.json', 'w') as file:	
 #	json.dump([times, coins, max_coins], file)
 
@@ -297,15 +297,17 @@ def level_select():
 	start_menu_button = ui.Button(0, 350, (150, 50), img = font.render('Main Menu', False, (255, 255, 255)))
 
 	level = 0
-	for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'Levels')):
+	for root, dirs, levelfiles in os.walk(os.path.join(os.getcwd(), 'Levels')):
 		y = 0
-		for file in files:
+		for file in levelfiles:
 			x = ((level) % (xMax)) * spacing
 			y = (level // xMax) * spacing
 			buttons.append(ui.Button(x,  y, (50, 50), img = font.render(f'{level + 1}', False, (255, 255, 255))))
 			labels.append(ui.Label(x - 50, y, f'{times[level] / 1000}'))
 			labels.append(ui.Label(x - 50, y + 10, f'{coins[level]} / {max_coins[level]}'))
 			level += 1
+			print(level)
+			print(len(times))
 
 	#level = 0
 	#print(len(buttons))
@@ -325,8 +327,6 @@ def level_select():
 					run = False
 
 		for i, button in enumerate(buttons):
-			
-
 			#button.set_pos()
 			#button.x = (i * 80) % (screen.get_width() - 100)
 			#button.y = (i * 80) / (screen.get_width() - 100)
@@ -347,12 +347,6 @@ def level_select():
 		screen.blit(panel.surface, (panel.x, panel.y))
 		pygame.display.update()
 
-
-
-
-
-
-
 def start_menu():
 	pygame.init()
 	
@@ -368,12 +362,11 @@ def start_menu():
 	sfx_volume = settings_options[0]
 	music_volume = settings_options[1]
 	global times, coins, max_coins
-	times = high_scores[0]
-	coins = high_scores[1]
-	max_coins = high_scores[2]
 
-
-	
+	for i in range(len(high_scores[0])):
+		times[i] = high_scores[0][i]
+		coins[i] = high_scores[1][i]
+		max_coins[i] = high_scores[2][i]
 
 	screen = pygame.display.set_mode((500, 500))
 	start_menu_BG = pygame.transform.scale2x(pygame.image.load(os.path.join('Images', 'MainScreenBackground.png'))).convert_alpha()
